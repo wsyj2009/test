@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动画弹出文字</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: #4CAF50;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        .popup-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 48px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 20;
+            white-space: nowrap;
+        }
+
+        .popup-text.animate {
+            animation: popupAnimation 2s ease-out forwards;
+        }
+
+        @keyframes popupAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .particle.animate {
+            animation: particleAnimation 1.5s ease-out forwards;
+        }
+
+        @keyframes particleAnimation {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--x), var(--y)) scale(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn" onclick="showPopup()">查看文字</button>
+        <div class="popup-text" id="popupText">Nishibushiyoubing</div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <script>
+        function showPopup() {
+            const popupText = document.getElementById('popupText');
+            const particles = document.getElementById('particles');
+            const button = document.querySelector('.btn');
+            
+            // 清除之前的动画
+            popupText.classList.remove('animate');
+            particles.innerHTML = '';
+            
+            // 触发重排以重置动画
+            void popupText.offsetWidth;
+            
+            // 添加动画类
+            popupText.classList.add('animate');
+            
+            // 隐藏按钮
+            button.classList.add('hidden');
+            
+            // 创建粒子效果
+            createParticles();
+        }
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // 随机位置
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const distance = 100 + Math.random() * 100;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--x', `${x}px`);
+                particle.style.setProperty('--y', `${y}px`);
+                particle.style.left = '50%';
+                particle.style.top = '50%';
+                
+                particlesContainer.appendChild(particle);
+                
+                // 延迟添加动画类
+                setTimeout(() => {
+                    particle.classList.add('animate');
+                }, 50);
+            }
+            
+            // 清理粒子
+            setTimeout(() => {
+                particlesContainer.innerHTML = '';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
